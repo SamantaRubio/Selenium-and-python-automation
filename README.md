@@ -190,6 +190,23 @@ every test*:
 The `LoginPage` object is still used directly by the login tests, so the real
 UI flow remains covered.
 
+### Credentials & secrets
+
+The SauceDemo logins (`standard_user` / `secret_sauce`) are **public demo
+credentials** printed on the login page, so they are safe to ship as defaults
+and the suite runs with zero configuration.
+
+Even so, credentials are read from **environment variables** (`SAUCE_USERNAME`,
+`SAUCE_PASSWORD`, ...) to model the correct practice. The rule, for anything
+real:
+
+- **Never hard-code secrets** - they stay in the git history forever.
+- Keep them in env vars or a local **`.env`** file (git-ignored). A
+  committed [`.env.example`](.env.example) documents the keys without values.
+- In CI, inject them via **GitHub Actions Secrets**, not in the workflow file.
+
+Copy the template to start: `cp .env.example .env`.
+
 ## Continuous Integration
 
 Every push and pull request to `main` runs the full suite on
