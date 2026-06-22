@@ -1,0 +1,4 @@
+# Core test automation dependencies
+selenium>=4.18.0      # WebDriver bindings (includes Selenium Manager for auto driver setup)
+pytest>=8.0.0         # Test runner
+pytest-html>=4.1.0    # HTML test reports

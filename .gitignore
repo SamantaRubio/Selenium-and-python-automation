@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Test artifacts
+reports/report.html
+reports/screenshots/
+assets/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
