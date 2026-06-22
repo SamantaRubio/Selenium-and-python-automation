@@ -218,3 +218,7 @@ Every push and pull request to `main` runs the full suite on
 | US-009 | Cancel checkout        | `test_us009_cancel_checkout.py`      |
 | US-010 | Logout                 | `test_us010_logout.py`               |
 | US-011 | Reset app state        | `test_us011_reset_app_state.py`      |
+
+## License
+
+Released under the [MIT License](LICENSE).
