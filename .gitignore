@@ -6,6 +6,10 @@ venv/
 env/
 .pytest_cache/
 
+# Secrets / local environment (never commit real credentials)
+.env
+.env.local
+
 # Test artifacts
 reports/report.html
 reports/screenshots/
