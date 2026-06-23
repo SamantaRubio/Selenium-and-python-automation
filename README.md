@@ -24,6 +24,7 @@ built with **Selenium WebDriver**, **Python** and **pytest**, following the
 
 ```
 .
+├── .env.example              # Template for local env vars (copy to .env)
 ├── config/
 │   └── config.py             # URLs, credentials, test data, timeouts
 ├── pages/                    # Page Object Model
@@ -166,6 +167,11 @@ Override any of these via environment variables:
 | `HEADLESS`         | `false`                       | Run without a visible browser       |
 | `EXPLICIT_WAIT`    | `10`                          | Max seconds for element waits       |
 | `PAGE_LOAD_TIMEOUT`| `30`                          | Max seconds for page loads          |
+| `SAUCE_USERNAME`   | `standard_user`               | Login user (public demo credential) |
+| `SAUCE_PASSWORD`   | `secret_sauce`                | Login password (public demo)        |
+
+See [Credentials & secrets](#credentials--secrets) for the full list of
+`SAUCE_*` overrides and the secret-handling rationale.
 
 ## Design Notes
 
