@@ -25,6 +25,12 @@ jobs:
 
     env:
       HEADLESS: "true"          # No display on CI runners.
+      # Credentials are injected from GitHub Actions Secrets, never stored in
+      # this file. Add them under: Settings > Secrets and variables > Actions.
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+      SAUCE_LOCKED_OUT_USER: ${{ secrets.SAUCE_LOCKED_OUT_USER }}
+      SAUCE_PROBLEM_USER: ${{ secrets.SAUCE_PROBLEM_USER }}
 
     steps:
       - name: Check out repository

@@ -1,13 +1,13 @@
 """Central configuration and test data for the SauceDemo test suite.
 
-Values can be overridden through environment variables so the same suite can
-run locally and in CI without code changes.
+Credentials are treated as SECRETS: they are never hard-coded here. They must
+be provided through the environment - locally via a git-ignored ``.env`` file
+(copy ``.env.example`` to ``.env`` and fill it in), and in CI via GitHub
+Actions Secrets. If a required secret is missing, the suite fails fast with a
+clear message instead of running with a wrong or empty value.
 
-Note on credentials: SauceDemo's logins are *public demo credentials* (printed
-on the login page), so they are safe to keep as defaults. Even so, they are
-read via environment variables to model the correct practice - real secrets
-must never be hard-coded; they belong in env vars / a .env file (git-ignored)
-or a secrets manager, and in CI in GitHub Actions Secrets.
+Non-secret settings (base URL, browser, timeouts) keep sensible defaults so
+they don't need to be configured for a normal run.
 """
 import os
 
@@ -28,6 +28,23 @@ def _load_dotenv() -> None:
                 continue
             key, value = line.split("=", 1)
             os.environ.setdefault(key.strip(), value.strip())
+
+
+def _require_secret(key: str) -> str:
+    """Read a required secret from the environment, or fail with guidance.
+
+    Used for sensitive values that must never live in the codebase. Raising
+    here (rather than defaulting) guarantees a real, intentional value is
+    always supplied - the core of correct secret handling.
+    """
+    value = os.getenv(key)
+    if not value:
+        raise RuntimeError(
+            f"Missing required secret '{key}'. "
+            "Copy .env.example to .env and fill it in (see the README), "
+            "or set it as a GitHub Actions Secret in CI."
+        )
+    return value
 
 
 _load_dotenv()
@@ -55,18 +72,22 @@ class Config:
 
 
 class Credentials:
-    """SauceDemo test accounts.
+    """Login accounts, treated as secrets.
 
-    These are public demo credentials; the env-var lookups exist to demonstrate
-    the secure pattern and to allow overriding without touching the code.
+    Real account credentials have NO defaults: they must be supplied via the
+    environment (.env locally, GitHub Actions Secrets in CI). This keeps
+    sensitive data out of the repository entirely.
     """
 
-    STANDARD_USER = os.getenv("SAUCE_USERNAME", "standard_user")
-    PASSWORD = os.getenv("SAUCE_PASSWORD", "secret_sauce")
-    LOCKED_OUT_USER = os.getenv("SAUCE_LOCKED_OUT_USER", "locked_out_user")
-    PROBLEM_USER = os.getenv("SAUCE_PROBLEM_USER", "problem_user")
+    # Real accounts - required secrets (no defaults).
+    STANDARD_USER = _require_secret("SAUCE_USERNAME")
+    PASSWORD = _require_secret("SAUCE_PASSWORD")
+    LOCKED_OUT_USER = _require_secret("SAUCE_LOCKED_OUT_USER")
+    PROBLEM_USER = _require_secret("SAUCE_PROBLEM_USER")
 
-    # Intentionally invalid credentials for negative login scenarios.
+    # Intentionally invalid values for negative login scenarios. These are
+    # deliberately fake (they must NOT match a real account), so they are not
+    # secrets and can keep defaults.
     INVALID_USER = os.getenv("SAUCE_INVALID_USER", "invalid_user")
     INVALID_PASSWORD = os.getenv("SAUCE_INVALID_PASSWORD", "wrong_password")
 
