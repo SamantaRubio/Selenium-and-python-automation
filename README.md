@@ -42,8 +42,12 @@ built with **Selenium WebDriver**, **Python** and **pytest**, following the
 ├── docs/user-stories/        # Source acceptance criteria
 ├── conftest.py               # Fixtures + screenshot-on-failure hook
 ├── pytest.ini                # Pytest config and markers
-└── requirements.txt
+├── requirements.txt          # Python dependencies (pip)
+└── PROJECT-STACK.md          # Full technology stack and rationale
 ```
+
+The full technology stack (language, browser, CI, patterns) is documented in
+[PROJECT-STACK.md](PROJECT-STACK.md).
 
 ## Setup
 
