@@ -57,6 +57,21 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### Credentials (required)
+
+Credentials are treated as secrets and are **not** stored in the repo, so you
+must provide them before running. Copy the template and fill in your values:
+
+```bash
+cp .env.example .env
+# then edit .env and set SAUCE_USERNAME, SAUCE_PASSWORD,
+# SAUCE_LOCKED_OUT_USER and SAUCE_PROBLEM_USER
+```
+
+`.env` is git-ignored, so your values never reach the repository. If a required
+secret is missing, the suite fails fast with a message telling you what to set.
+See [Credentials & secrets](#credentials--secrets) for the rationale.
+
 ## Running the Tests
 
 > Activate the virtual environment first: `source .venv/bin/activate`
@@ -158,7 +173,17 @@ open reports/report.html
 
 ## Configuration
 
-Override any of these via environment variables:
+**Secrets (required, no defaults)** — set in your `.env` locally or as CI
+secrets. The suite fails fast if any is missing:
+
+| Variable                | Description                          |
+|-------------------------|--------------------------------------|
+| `SAUCE_USERNAME`        | Login user                           |
+| `SAUCE_PASSWORD`        | Login password                       |
+| `SAUCE_LOCKED_OUT_USER` | Locked-out account (for US-002)      |
+| `SAUCE_PROBLEM_USER`    | Problem account                      |
+
+**Non-secret settings (optional)** — sensible defaults, override via env vars:
 
 | Variable           | Default                       | Description                         |
 |--------------------|-------------------------------|-------------------------------------|
@@ -167,11 +192,9 @@ Override any of these via environment variables:
 | `HEADLESS`         | `false`                       | Run without a visible browser       |
 | `EXPLICIT_WAIT`    | `10`                          | Max seconds for element waits       |
 | `PAGE_LOAD_TIMEOUT`| `30`                          | Max seconds for page loads          |
-| `SAUCE_USERNAME`   | `standard_user`               | Login user (public demo credential) |
-| `SAUCE_PASSWORD`   | `secret_sauce`                | Login password (public demo)        |
 
-See [Credentials & secrets](#credentials--secrets) for the full list of
-`SAUCE_*` overrides and the secret-handling rationale.
+See [Credentials & secrets](#credentials--secrets) for the secret-handling
+rationale.
 
 ## Design Notes
 
@@ -198,20 +221,24 @@ UI flow remains covered.
 
 ### Credentials & secrets
 
-The SauceDemo logins (`standard_user` / `secret_sauce`) are **public demo
-credentials** printed on the login page, so they are safe to ship as defaults
-and the suite runs with zero configuration.
+Credentials are treated as **secrets** and handled the way real, private
+credentials should be — never stored in the repository:
 
-Even so, credentials are read from **environment variables** (`SAUCE_USERNAME`,
-`SAUCE_PASSWORD`, ...) to model the correct practice. The rule, for anything
-real:
+- **No hard-coded values.** The credential variables have no defaults in code;
+  they are read from the environment and the suite **fails fast** with a clear
+  message if any is missing (`config/config.py`).
+- **Local:** real values live only in a git-ignored **`.env`** file. A committed
+  [`.env.example`](.env.example) documents the keys with blank values as a
+  template (`cp .env.example .env`, then fill it in).
+- **CI:** values are injected from **GitHub Actions Secrets**, referenced in the
+  workflow (`${{ secrets.SAUCE_USERNAME }}`) — never written into the YAML.
+- **Why:** anything hard-coded stays in git history forever. Reading from the
+  environment keeps secrets out of the repo and lets each environment supply its
+  own values without code changes.
 
-- **Never hard-code secrets** - they stay in the git history forever.
-- Keep them in env vars or a local **`.env`** file (git-ignored). A
-  committed [`.env.example`](.env.example) documents the keys without values.
-- In CI, inject them via **GitHub Actions Secrets**, not in the workflow file.
-
-Copy the template to start: `cp .env.example .env`.
+> Note: SauceDemo's real logins are public demo credentials, but this project
+> deliberately treats them as if they were private, to model correct secret
+> handling end to end.
 
 ## Continuous Integration
 
